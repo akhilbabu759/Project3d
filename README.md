@@ -1,7 +1,9 @@
-# My Node Project
+# 3D Model Management API
 
 ## Overview
-This project is a Node.js application that serves as a backend server. It is designed to handle file uploads using Multer and provides a structure for managing routes and middleware.
+This project is a Node.js backend service for uploading, managing, and retrieving 3D model files (`.glb`). It uses Express.js for the server, Multer for handling file uploads, and Cloudinary for cloud-based storage and delivery.
+
+The API is secured with an API key and includes rate limiting to prevent abuse.
 
 ## Project Structure
 ```
