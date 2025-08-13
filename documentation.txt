@@ -1,0 +1,111 @@
+D Model API Documentation
+Base URL:
+http://localhost:3000
+
+Authentication
+No authentication is required for these endpoints.
+Note: The backend uses Cloudinary credentials from a .env file (not needed for frontend).
+
+Endpoints
+1. Upload a 3D Model
+POST models
+
+Description: Upload a .glb 3D model file.
+Request:
+Content-Type: multipart/form-data
+Body:
+model (file): The .glb file to upload.
+Example (using fetch in JS):
+const formData = new FormData();
+formData.append('model', fileInput.files[0]);
+fetch('http://localhost:3000/models', {
+  method: 'POST',
+  body: formData,
+})
+  .then(res => res.json())
+  .then(console.log);
+
+Response: 201 Created
+{
+  "public_id": "models/filename",
+  "url": "https://res.cloudinary.com/...",
+  "asset_id": "...",
+  "resource_type": "image",
+  "format": "glb",
+  "bytes": 123456
+}
+
+Errors:
+
+400 if no file uploaded
+500 on server/cloudinary error
+2. Get Model Details
+GET /models/:publicId
+
+Description: Get details for a specific model by its public_id.
+Request:
+URL param: publicId (e.g. models/filename)
+Response: 200 OK
+{
+  "public_id": "models/filename",
+  "format": "glb",
+  "bytes": 123456,
+  "secure_url": "https://res.cloudinary.com/...",
+  ...
+}
+
+Errors:
+404 if not found
+3. Update (Replace) a Model
+PUT /models/:publicId
+
+Description: Replace an existing model with a new file.
+Request:
+Content-Type: multipart/form-data
+URL param: publicId
+Body:
+model (file): The new .glb file
+Example (using fetch in JS):
+const formData = new FormData();
+formData.append('model', fileInput.files[0]);
+fetch('http://localhost:3000/models/models%2Ffilename', {
+  method: 'PUT',
+  body: formData,
+})
+  .then(res => res.json())
+  .then(console.log);
+
+(Note: encode slashes in publicId as %2F)
+
+Response: 200 OK
+{
+  "public_id": "models/filename",
+  "url": "https://res.cloudinary.com/...",
+  "bytes": 123456,
+  "version": 123,
+  "format": "glb"
+}
+
+Errors:
+
+400 if no file uploaded
+500 on error
+4. Delete a Model
+DELETE /models/:publicId
+
+Description: Delete a model from Cloudinary.
+Request:
+URL param: publicId
+Response: 200 OK
+{
+  "result": "ok"
+}
+Errors:
+500 on error
+Notes for Frontend
+All file uploads must use the model field in multipart/form-data.
+The public_id returned from upload is needed for GET/PUT/DELETE.
+The url in the response is a direct link to the uploaded model on Cloudinary.
+Only .glb files are supported.
+If you get a 404, check that the public_id is correct and URL-encoded.
+Let me know if you need example code for React, Vue, or another frontend framework!
