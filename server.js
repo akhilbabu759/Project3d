@@ -65,6 +65,34 @@ app.post('/models', upload.single('model'), async (req, res) => {
   }
 });
 
+// LIST
+app.get('/models', async (req, res) => {
+  console.log('Fetching all models...');
+  try {
+    const { resources } = await cloudinary.api.resources({
+      type: 'upload',
+      resource_type: 'raw',
+      prefix: 'models/', // Only get files from the 'models' folder
+      max_results: 500 // Default is 50, max is 500. Add pagination for more.
+    });
+
+    const models = resources.map(model => ({
+      public_id: model.public_id.substring(7), // remove 'models/' prefix
+      url: model.secure_url,
+      asset_id: model.asset_id,
+      bytes: model.bytes,
+      format: model.format,
+      created_at: model.created_at,
+    }));
+
+    console.log(`Found ${models.length} models.`);
+    res.json(models);
+  } catch (e) {
+    console.error('Failed to fetch models:', e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // READ
 app.get('/models/:publicId', async (req, res) => {
   console.log('Fetching model details for:', req.params.publicId);
